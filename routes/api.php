@@ -17,9 +17,25 @@ use Illuminate\Support\Facades\Route;
 Route::group(['middleware' => 'api'], function(){
     
     // index
-    Route::get('/contact', function(){
-        return view('contact.index');
-    });
+    Route::get('/contact', 'API\ContactController@index');
+
+
+
+    // axios
+    // Get the data
+    Route::get('/contact/all', 'API\ContactController@getData');
+
+    // Insert new data
+    Route::post('/contact', 'API\ContactController@store');
+
+    // Show id data
+    Route::get('/contact/{id}', 'API\ContactController@show');
+
+    // Edit the id data
+    Route::patch('/contact/{contact}', 'API\ContactController@update');
+
+    // Delete the id data
+    Route::delete('/contact/{contact}', 'API\ContactController@destroy');
 });
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {

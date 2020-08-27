@@ -1942,20 +1942,98 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       edit: false,
-      lists: {},
+      lists: [],
       contact: {
         name: '',
         email: '',
         phone: ''
-      }
+      },
+      editId: ''
     };
   },
   mounted: function mounted() {
     console.log('Component mounted.');
+    this.getData();
+  },
+  methods: {
+    getData: function getData() {
+      var _this = this;
+
+      axios.get('contact/all').then(function (response) {
+        console.log('Getting the components');
+        _this.lists = response.data;
+        _this.contact.name = '', _this.contact.email = '', _this.contact.phone = '';
+      })["catch"](function (errors) {
+        console.log(errors.response);
+      });
+    },
+    newContact: function newContact() {
+      var _this2 = this;
+
+      axios.post('contact', this.contact).then(function (response) {
+        console.log('Inserting the new data');
+
+        _this2.getData();
+      })["catch"](function (errors) {
+        console.log(errors.response);
+      });
+    },
+    showData: function showData(id) {
+      var _this3 = this;
+
+      axios.get('contact/' + id).then(function (response) {
+        console.log('Get the edit data');
+        _this3.editId = response.data.contact.id;
+        _this3.contact.name = response.data.contact.name;
+        _this3.contact.email = response.data.contact.email;
+        _this3.contact.phone = response.data.contact.phone;
+        _this3.edit = true; // console.log(response.data);
+      })["catch"](function (errors) {
+        console.log(errors.response);
+      });
+    },
+    editContact: function editContact(editId) {
+      var _this4 = this;
+
+      axios.patch('contact/' + editId, this.contact).then(function (response) {
+        console.log('Edit the data');
+        _this4.contact.name = '';
+        _this4.contact.email = '';
+        _this4.contact.phone = '';
+        _this4.edit = false;
+
+        _this4.getData();
+      });
+    },
+    deleteContact: function deleteContact(deleteId) {
+      var _this5 = this;
+
+      axios["delete"]('contact/' + deleteId).then(function (response) {
+        console.log("Delete the data");
+
+        _this5.getData();
+      })["catch"](function (errors) {
+        console.log(errors.response);
+      });
+    }
   }
 });
 
@@ -37556,16 +37634,92 @@ var render = function() {
                 on: {
                   submit: function($event) {
                     $event.preventDefault()
-                    _vm.edit ? _vm.editContact : _vm.newContact
+                    _vm.edit ? _vm.editContact(_vm.editId) : _vm.newContact()
                   }
                 }
               },
               [
-                _vm._m(1),
+                _c("div", { staticClass: "form-group" }, [
+                  _c("label", { attrs: { for: "name" } }, [_vm._v("Name")]),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.contact.name,
+                        expression: "contact.name"
+                      }
+                    ],
+                    staticClass: "form-control",
+                    attrs: { type: "text", id: "name", name: "contact.name" },
+                    domProps: { value: _vm.contact.name },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(_vm.contact, "name", $event.target.value)
+                      }
+                    }
+                  })
+                ]),
                 _vm._v(" "),
-                _vm._m(2),
+                _c("div", { staticClass: "form-group" }, [
+                  _c("label", { attrs: { for: "email" } }, [_vm._v("Email")]),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.contact.email,
+                        expression: "contact.email"
+                      }
+                    ],
+                    staticClass: "form-control",
+                    attrs: {
+                      type: "email",
+                      id: "email",
+                      name: "contact.email"
+                    },
+                    domProps: { value: _vm.contact.email },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(_vm.contact, "email", $event.target.value)
+                      }
+                    }
+                  })
+                ]),
                 _vm._v(" "),
-                _vm._m(3),
+                _c("div", { staticClass: "form-group" }, [
+                  _c("label", { attrs: { for: "phone" } }, [_vm._v("Phone")]),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.contact.phone,
+                        expression: "contact.phone"
+                      }
+                    ],
+                    staticClass: "form-control",
+                    attrs: { type: "text", id: "phone", name: "contact.phone" },
+                    domProps: { value: _vm.contact.phone },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(_vm.contact, "phone", $event.target.value)
+                      }
+                    }
+                  })
+                ]),
                 _vm._v(" "),
                 _c("div", { staticClass: "form-group" }, [
                   _c("input", {
@@ -37597,7 +37751,56 @@ var render = function() {
               ]
             )
           ])
-        ])
+        ]),
+        _vm._v(" "),
+        _vm.lists
+          ? _c("div", { staticClass: "card mt-5" }, [
+              _vm._m(1),
+              _vm._v(" "),
+              _c("div", { staticClass: "card-body" }, [
+                _c(
+                  "ul",
+                  { staticClass: "list-group" },
+                  _vm._l(_vm.lists.contacts, function(list) {
+                    return _c("li", { staticClass: "list-group-items" }, [
+                      _c("strong", [_vm._v(_vm._s(list.name))]),
+                      _vm._v(
+                        " " +
+                          _vm._s(list.email) +
+                          " " +
+                          _vm._s(list.phone) +
+                          "\n                            "
+                      ),
+                      _c(
+                        "button",
+                        {
+                          on: {
+                            click: function($event) {
+                              return _vm.showData(list.id)
+                            }
+                          }
+                        },
+                        [_vm._v("Edit")]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "button",
+                        {
+                          on: {
+                            click: function($event) {
+                              return _vm.deleteContact(list.id)
+                            }
+                          }
+                        },
+                        [_vm._v("Delete")]
+                      )
+                    ])
+                  }),
+                  0
+                )
+              ])
+            ])
+          : _vm._e()
       ])
     ])
   ])
@@ -37608,46 +37811,15 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "card-header" }, [
+      _c("h1", [_vm._v("Add Contact")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "card-header" }, [
       _c("h1", [_vm._v("Contact")])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "form-group" }, [
-      _c("label", { attrs: { for: "name" } }, [_vm._v("Name")]),
-      _vm._v(" "),
-      _c("input", {
-        staticClass: "form-control",
-        attrs: { type: "text", id: "name", name: "contact.name" }
-      })
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "form-group" }, [
-      _c("label", { attrs: { for: "email" } }, [_vm._v("Email")]),
-      _vm._v(" "),
-      _c("input", {
-        staticClass: "form-control",
-        attrs: { type: "email", id: "email", name: "contact.email" }
-      })
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "form-group" }, [
-      _c("label", { attrs: { for: "phone" } }, [_vm._v("Phone")]),
-      _vm._v(" "),
-      _c("input", {
-        staticClass: "form-control",
-        attrs: { type: "text", id: "phone", name: "contact.phone" }
-      })
     ])
   }
 ]
@@ -49834,6 +50006,8 @@ module.exports = function(module) {
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
 window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
+
+var axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -49844,6 +50018,7 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 // Vue.component('example-component', require('./components/ExampleComponent.vue').default);
+
 
 Vue.component('contact', __webpack_require__(/*! ./components/ContactComponent.vue */ "./resources/js/components/ContactComponent.vue")["default"]);
 /**
