@@ -18,7 +18,7 @@ Route::group(['middleware' => 'api'], function(){
     
     // index
     Route::get('/contact', function(){
-        return 'Contact';
+        return view('contact.index');
     });
 });
 
